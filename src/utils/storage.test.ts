@@ -1,5 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { addFish, getFish, setCurrentFish, getCurrentFish, clearFish } from './storage';
+import {
+  addFish,
+  getFish,
+  setCurrentFish,
+  getCurrentFish,
+  clearFish,
+  FISH_LIST_KEY,
+  CURRENT_FISH_KEY,
+} from './storage';
 
 jest.mock('@react-native-async-storage/async-storage', () => {
   let store: Record<string, string> = {};
@@ -18,9 +26,6 @@ jest.mock('@react-native-async-storage/async-storage', () => {
     }),
   };
 });
-
-const FISH_LIST_KEY = 'fish_list';
-const CURRENT_FISH_KEY = 'current_fish';
 
 describe('storage utils', () => {
   beforeEach(async () => {
