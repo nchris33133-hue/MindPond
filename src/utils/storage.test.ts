@@ -50,6 +50,13 @@ describe('storage utils', () => {
     expect(AsyncStorage.setItem).toHaveBeenCalledWith(FISH_LIST_KEY, expect.any(String));
   });
 
+  it('addFish supplies defaults when name and rarity are omitted', async () => {
+    const fish = await addFish('trout');
+    expect(fish.type).toBe('trout');
+    expect(fish.name).toBe('Unnamed');
+    expect(fish.rarity).toBe('common');
+  });
+
   it('setCurrentFish and getCurrentFish handle the current fish', async () => {
     await setCurrentFish('tuna');
     expect(AsyncStorage.setItem).toHaveBeenCalledWith(CURRENT_FISH_KEY, 'tuna');

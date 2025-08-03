@@ -37,9 +37,17 @@ export async function getFish(): Promise<Fish[]> {
 }
 
 /**
- * Add a new fish and save it to storage
+ * Add a new fish and save it to storage.
+ *
+ * The name and rarity arguments are optional so callers that only
+ * provide the fish type/emoji continue to work. When omitted, a
+ * sensible default is used for each property.
  */
-export async function addFish(type: string, name: string, rarity: Rarity): Promise<Fish> {
+export async function addFish(
+  type: string,
+  name = 'Unnamed',
+  rarity: Rarity = 'common'
+): Promise<Fish> {
   const fish: Fish = {
     id: Date.now().toString(),
     type,
