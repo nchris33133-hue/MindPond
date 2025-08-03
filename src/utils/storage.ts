@@ -2,10 +2,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 // Keys for storing fish data in local storage
+
 const CURRENT_FISH_KEY = 'current_fish';
 const FISH_LIST_KEY = 'fish_list';
 
 // Key for storing the list of caught fish
+const FISH_LIST_KEY = 'fish_list';
+
+// Key for storing the list of hatched fish
 const FISH_LIST_KEY = 'fish_list';
 
 export async function setCurrentFish(type: string) {
