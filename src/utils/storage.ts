@@ -1,6 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Keys for storing data in local storage
+
+// Keys for storing fish data in local storage
+
 const CURRENT_FISH_KEY = 'current_fish';
 const FISH_LIST_KEY = 'fish_list';
 
