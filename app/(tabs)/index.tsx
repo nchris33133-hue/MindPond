@@ -44,7 +44,7 @@ export default function TaskScreen() {
 
   async function handleTaskComplete(task: string) {
     if (isTaskOnCooldown(completions, task)) {
-      Alert.alert('Task already completed', 'Please try again tomorrow.');
+      Alert.alert('Task already completed', 'Please try again in 20 seconds.');
       return;
     }
 
