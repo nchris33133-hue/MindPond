@@ -13,9 +13,13 @@ export async function getCurrentFish(): Promise<string | null> {
   return await AsyncStorage.getItem(CURRENT_FISH_KEY);
 }
 
+export type Rarity = 'common' | 'rare' | 'epic' | 'legendary';
+
 export type Fish = {
   id: string;
   type: string;
+  name: string;
+  rarity: Rarity;
   timestamp: number;
 };
 
@@ -35,10 +39,12 @@ export async function getFish(): Promise<Fish[]> {
 /**
  * Add a new fish and save it to storage
  */
-export async function addFish(type: string): Promise<Fish> {
+export async function addFish(type: string, name: string, rarity: Rarity): Promise<Fish> {
   const fish: Fish = {
     id: Date.now().toString(),
     type,
+    name,
+    rarity,
     timestamp: Date.now(),
   };
 

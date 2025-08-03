@@ -14,6 +14,7 @@ export default function TaskScreen() {
   const router = useRouter();
   const tasks = ['Walk', 'Read', 'Meditate', 'Journal', 'Digital Detox'];
   const fishTypes = ['🐠', '🐟', '🐡', '🦈', '🐬', '🐳', '🐋'];
+  const fishNames = ['Nemo', 'Dory', 'Bubbles', 'Finley', 'Coral', 'Gill', 'Splash'];
   const [completions, setCompletions] = useState<TaskCompletions>({});
 
   useEffect(() => {
@@ -28,6 +29,19 @@ export default function TaskScreen() {
     return { id: index, emoji: fishTypes[index] };
   }
 
+  function getRandomName() {
+    const index = Math.floor(Math.random() * fishNames.length);
+    return fishNames[index];
+  }
+
+  function getRandomRarity() {
+    const r = Math.random();
+    if (r < 0.6) return 'common';
+    if (r < 0.85) return 'rare';
+    if (r < 0.97) return 'epic';
+    return 'legendary';
+  }
+
   async function handleTaskComplete(task: string) {
     if (isTaskOnCooldown(completions, task)) {
       Alert.alert('Task already completed', 'Please try again tomorrow.');
@@ -38,15 +52,22 @@ export default function TaskScreen() {
     setCompletions({ ...completions, [task]: Date.now() });
 
     const randomFish = getRandomFish();
-    console.log('Generated fish:', randomFish.emoji);
+    const name = getRandomName();
+    const rarity = getRandomRarity();
+    console.log('Generated fish:', randomFish.emoji, name, rarity);
 
-    await addFish(randomFish.emoji);
+    const fishRecord = await addFish(randomFish.emoji, name, rarity);
     await setCurrentFish(randomFish.emoji);
 
-    // Pass only the ID, not the emoji
     router.push({
       pathname: '/hatch',
-      params: { fishId: randomFish.id.toString(), key: Date.now().toString() }
+      params: {
+        fishId: randomFish.id.toString(),
+        name,
+        rarity,
+        hatchedAt: fishRecord.timestamp.toString(),
+        key: Date.now().toString(),
+      }
     });
   }
 
