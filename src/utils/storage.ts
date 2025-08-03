@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export const CURRENT_FISH_KEY = 'current_fish';
 export const FISH_LIST_KEY = 'fish_list';
 export const TASK_COMPLETIONS_KEY = 'task_completions';
+export const TASK_COOLDOWN_MS = 20 * 1000;
 
 export async function setCurrentFish(type: string) {
   await AsyncStorage.setItem(CURRENT_FISH_KEY, type);
@@ -108,7 +109,7 @@ export async function setTaskCompleted(task: string): Promise<void> {
 export function isTaskOnCooldown(
   completions: TaskCompletions,
   task: string,
-  cooldownMs = 24 * 60 * 60 * 1000
+  cooldownMs = TASK_COOLDOWN_MS
 ): boolean {
   const last = completions[task];
   return last ? Date.now() - last < cooldownMs : false;
