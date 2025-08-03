@@ -1,7 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Key for storing fish in local storage
+// Keys for storing data in local storage
 const CURRENT_FISH_KEY = 'current_fish';
+const FISH_LIST_KEY = 'fish_list';
 
 export async function setCurrentFish(type: string) {
   await AsyncStorage.setItem(CURRENT_FISH_KEY, type);
@@ -22,7 +23,7 @@ export type Fish = {
  */
 export async function getFish(): Promise<Fish[]> {
   try {
-    const json = await AsyncStorage.getItem(CURRENT_FISH_KEY);
+    const json = await AsyncStorage.getItem(FISH_LIST_KEY);
     return json ? JSON.parse(json) : [];
   } catch (e) {
     console.error('Failed to load fish:', e);
@@ -45,7 +46,7 @@ export async function addFish(type: string): Promise<Fish> {
 
   console.log('Saving fish list:', existing); // 👈 DEBUG
 
-  await AsyncStorage.setItem(CURRENT_FISH_KEY, JSON.stringify(existing));
+  await AsyncStorage.setItem(FISH_LIST_KEY, JSON.stringify(existing));
 
   return fish;
 }
@@ -55,7 +56,7 @@ export async function addFish(type: string): Promise<Fish> {
  */
 export async function clearFish() {
   try {
-    await AsyncStorage.removeItem(CURRENT_FISH_KEY);
+    await AsyncStorage.removeItem(FISH_LIST_KEY);
     console.log('All fish cleared.');
   } catch (e) {
     console.error('Failed to clear fish:', e);
