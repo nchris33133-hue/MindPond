@@ -52,16 +52,17 @@ export default function AquariumScreen() {
         </View>
       ) : (
         animations.map((anim, index) => (
-          <Animated.Text
+          <Animated.View
             key={fish[index].id}
             style={{
               position: 'absolute',
-              fontSize: 40,
               transform: [{ translateX: anim.x }, { translateY: anim.y }],
+              alignItems: 'center',
             }}
           >
-            {fish[index].type}
-          </Animated.Text>
+            <Text style={{ fontSize: 40 }}>{fish[index].type}</Text>
+            <Text style={{ fontSize: 12 }}>{fish[index].name}</Text>
+          </Animated.View>
         ))
       )}
     </View>

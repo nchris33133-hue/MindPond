@@ -37,12 +37,16 @@ describe('storage utils', () => {
   });
 
   it('addFish adds a fish and getFish retrieves the list', async () => {
-    const fish = await addFish('salmon');
+    const fish = await addFish('salmon', 'Nemo', 'common');
     expect(fish.type).toBe('salmon');
+    expect(fish.name).toBe('Nemo');
+    expect(fish.rarity).toBe('common');
 
     const list = await getFish();
     expect(list).toHaveLength(1);
     expect(list[0].type).toBe('salmon');
+    expect(list[0].name).toBe('Nemo');
+    expect(list[0].rarity).toBe('common');
     expect(AsyncStorage.setItem).toHaveBeenCalledWith(FISH_LIST_KEY, expect.any(String));
   });
 
@@ -55,7 +59,7 @@ describe('storage utils', () => {
   });
 
   it('clearFish empties stored fish data', async () => {
-    await addFish('cod');
+    await addFish('cod', 'Bubbles', 'rare');
     await clearFish();
     const list = await getFish();
     expect(list).toEqual([]);
