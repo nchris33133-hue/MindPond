@@ -7,6 +7,9 @@ import {
   clearFish,
   FISH_LIST_KEY,
   CURRENT_FISH_KEY,
+  setTaskCompleted,
+  getTaskCompletions,
+  TASK_COMPLETIONS_KEY,
 } from './storage';
 
 jest.mock('@react-native-async-storage/async-storage', () => {
@@ -57,5 +60,16 @@ describe('storage utils', () => {
     const list = await getFish();
     expect(list).toEqual([]);
     expect(AsyncStorage.removeItem).toHaveBeenCalledWith(FISH_LIST_KEY);
+  });
+
+  it('setTaskCompleted records a timestamp and getTaskCompletions retrieves it', async () => {
+    await setTaskCompleted('Walk');
+    expect(AsyncStorage.setItem).toHaveBeenCalledWith(
+      TASK_COMPLETIONS_KEY,
+      expect.any(String)
+    );
+    const completions = await getTaskCompletions();
+    expect(completions.Walk).toBeDefined();
+    expect(typeof completions.Walk).toBe('number');
   });
 });

@@ -1,8 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Keys for storing fish data in local storage
+// Keys for storing data in local storage
 export const CURRENT_FISH_KEY = 'current_fish';
 export const FISH_LIST_KEY = 'fish_list';
+export const TASK_COMPLETIONS_KEY = 'task_completions';
 
 export async function setCurrentFish(type: string) {
   await AsyncStorage.setItem(CURRENT_FISH_KEY, type);
@@ -58,4 +59,43 @@ export async function clearFish() {
   } catch (e) {
     console.error('Failed to clear fish:', e);
   }
+}
+
+export type TaskCompletions = Record<string, number>;
+
+/**
+ * Get completion timestamps for all tasks
+ */
+export async function getTaskCompletions(): Promise<TaskCompletions> {
+  try {
+    const json = await AsyncStorage.getItem(TASK_COMPLETIONS_KEY);
+    return json ? JSON.parse(json) : {};
+  } catch (e) {
+    console.error('Failed to load task completions:', e);
+    return {};
+  }
+}
+
+/**
+ * Mark a task as completed now
+ */
+export async function setTaskCompleted(task: string): Promise<void> {
+  const completions = await getTaskCompletions();
+  completions[task] = Date.now();
+  await AsyncStorage.setItem(
+    TASK_COMPLETIONS_KEY,
+    JSON.stringify(completions)
+  );
+}
+
+/**
+ * Determine if a task is still on its cooldown period
+ */
+export function isTaskOnCooldown(
+  completions: TaskCompletions,
+  task: string,
+  cooldownMs = 24 * 60 * 60 * 1000
+): boolean {
+  const last = completions[task];
+  return last ? Date.now() - last < cooldownMs : false;
 }
