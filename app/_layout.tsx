@@ -1,11 +1,11 @@
+import 'react-native-gesture-handler';
+import 'react-native-reanimated';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import 'react-native-gesture-handler';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Provider as PaperProvider } from 'react-native-paper';
-import 'react-native-reanimated';
 import { useEffect, useState } from 'react';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
