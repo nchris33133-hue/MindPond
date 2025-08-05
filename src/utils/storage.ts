@@ -7,6 +7,7 @@ export const TASK_COMPLETIONS_KEY = 'task_completions';
 export const TASK_COOLDOWN_MS = 20 * 1000;
 export const STREAK_COUNT_KEY = 'streak_count';
 export const STREAK_LAST_DATE_KEY = 'streak_last_date';
+export const ONBOARDING_KEY = 'onboarding_complete';
 
 // How long each fish rarity should live, in milliseconds
 export const FISH_LIFESPAN_MS: Record<Rarity, number> = {
@@ -188,4 +189,13 @@ export function isTaskOnCooldown(
 ): boolean {
   const last = completions[task];
   return last ? Date.now() - last < cooldownMs : false;
+}
+
+export async function setOnboardingComplete(): Promise<void> {
+  await AsyncStorage.setItem(ONBOARDING_KEY, 'true');
+}
+
+export async function hasCompletedOnboarding(): Promise<boolean> {
+  const value = await AsyncStorage.getItem(ONBOARDING_KEY);
+  return value === 'true';
 }

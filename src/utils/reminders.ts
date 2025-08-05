@@ -14,3 +14,22 @@ export async function scheduleTaskReminder(task: string, date: Date) {
     trigger: date,
   });
 }
+
+export async function scheduleDailyReminder(time: Date) {
+  const { status } = await Notifications.requestPermissionsAsync();
+  if (status !== 'granted') {
+    return;
+  }
+
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: 'MindPond Reminder',
+      body: 'Time for your MindPond activity',
+    },
+    trigger: {
+      hour: time.getHours(),
+      minute: time.getMinutes(),
+      repeats: true,
+    },
+  });
+}
