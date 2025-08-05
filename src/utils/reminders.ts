@@ -1,17 +1,16 @@
-import * as Calendar from 'expo-calendar';
+import * as Notifications from 'expo-notifications';
 
 export async function scheduleTaskReminder(task: string, date: Date) {
-  const { status } = await Calendar.requestCalendarPermissionsAsync();
+  const { status } = await Notifications.requestPermissionsAsync();
   if (status !== 'granted') {
     return;
   }
 
-  const calendar = await Calendar.getDefaultCalendarAsync();
-  const endDate = new Date(date.getTime() + 5 * 60000);
-
-  await Calendar.createEventAsync(calendar.id, {
-    title: `MindPond Reminder: ${task}`,
-    startDate: date,
-    endDate,
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: 'MindPond Reminder',
+      body: task,
+    },
+    trigger: date,
   });
 }
