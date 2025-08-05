@@ -1,19 +1,22 @@
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
 import { Animated, Dimensions, Text, View } from 'react-native';
-import { Fish, getFish } from '../../src/utils/storage';
+import { Fish, getFish, getStreak } from '../../src/utils/storage';
 
 const { width, height } = Dimensions.get('window');
 
 export default function AquariumScreen() {
   const [fish, setFish] = useState<Fish[]>([]);
   const [animations, setAnimations] = useState<Animated.ValueXY[]>([]);
+  const [streak, setStreak] = useState(0);
 
   useFocusEffect(
     useCallback(() => {
       const loadFish = async () => {
         const storedFish = await getFish();
         setFish(storedFish);
+        const s = await getStreak();
+        setStreak(s);
 
         // create new animations for each fish
         const anims = storedFish.map(
@@ -64,6 +67,13 @@ export default function AquariumScreen() {
             <Text style={{ fontSize: 12 }}>{fish[index].name}</Text>
           </Animated.View>
         ))
+      )}
+      {streak >= 7 && (
+        <>
+          <Text style={{ position: 'absolute', bottom: 10, left: 10, fontSize: 30 }}>🪸</Text>
+          <Text style={{ position: 'absolute', bottom: 10, right: 10, fontSize: 30 }}>🌿</Text>
+          <Text style={{ position: 'absolute', top: 10, left: width / 2 - 10, fontSize: 20 }}>🫧</Text>
+        </>
       )}
     </View>
   );
