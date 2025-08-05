@@ -1,4 +1,10 @@
-import { addFish, setCurrentFish, setTaskCompleted, Rarity } from './storage';
+import {
+  addFish,
+  setCurrentFish,
+  setTaskCompleted,
+  Rarity,
+  getStreak,
+} from './storage';
 import { Router } from 'expo-router';
 
 const fishNames = ['Nemo', 'Dory', 'Bubbles', 'Finley', 'Coral', 'Gill', 'Splash'];
@@ -51,19 +57,28 @@ function getRandomName() {
 
 export async function completeTask(task: string, router: Router) {
   await setTaskCompleted(task);
-  const reward =
+  let reward =
     TASK_FISH[task] ?? {
       emoji: '🐠',
       species: 'Fish',
       fact: 'Fish are friends, not food.',
       rarity: 'common' as Rarity,
     };
+
+  // Increase chance for a rarer fish based on streak length
+  const streak = await getStreak();
+  const bonusChance = Math.min(0.05 * streak, 0.25);
+  if (Math.random() < bonusChance) {
+    reward = { ...reward, rarity: upgradeRarity(reward.rarity) };
+  }
+
   const name = getRandomName();
   const fishRecord = await addFish(reward.emoji, name, reward.rarity);
   await setCurrentFish(reward.emoji);
   router.push({
-    pathname: '/hatch',
+    pathname: '/reflection',
     params: {
+      task,
       emoji: reward.emoji,
       species: reward.species,
       fact: reward.fact,
@@ -73,6 +88,19 @@ export async function completeTask(task: string, router: Router) {
       key: Date.now().toString(),
     },
   });
+}
+
+function upgradeRarity(rarity: Rarity): Rarity {
+  switch (rarity) {
+    case 'common':
+      return 'rare';
+    case 'rare':
+      return 'epic';
+    case 'epic':
+      return 'legendary';
+    default:
+      return 'legendary';
+  }
 }
 
 export function formatTime(totalSeconds: number): string {

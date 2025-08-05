@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, Button } from 'react-native';
+import ReminderButton from '@/components/ReminderButton';
 import { useRouter } from 'expo-router';
 import { completeTask, formatTime } from '../../src/utils/taskHelpers';
 
@@ -33,6 +34,7 @@ export default function ReadScreen() {
 
   return (
     <View style={{ flex: 1, padding: 20 }}>
+      <ReminderButton task="Read" />
       <Text>
         Reading 10 pages (about 20–30 minutes) improves memory and reduces
         stress. Pick something you&apos;d like to read.
