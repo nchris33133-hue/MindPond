@@ -1,40 +1,74 @@
-import { addFish, setCurrentFish, setTaskCompleted } from './storage';
+import { addFish, setCurrentFish, setTaskCompleted, Rarity } from './storage';
 import { Router } from 'expo-router';
 
-const fishTypes = ['🐠', '🐟', '🐡', '🦈', '🐬', '🐳', '🐋'];
 const fishNames = ['Nemo', 'Dory', 'Bubbles', 'Finley', 'Coral', 'Gill', 'Splash'];
 
-function getRandomFish() {
-  const index = Math.floor(Math.random() * fishTypes.length);
-  return { id: index, emoji: fishTypes[index] };
-}
+type FishReward = { emoji: string; species: string; fact: string; rarity: Rarity };
+
+const TASK_FISH: Record<string, FishReward> = {
+  Meditate: {
+    emoji: '🐟',
+    species: 'Koi',
+    fact: 'Koi fish are symbols of calm and balance.',
+    rarity: 'rare',
+  },
+  Walk: {
+    emoji: '🐠',
+    species: 'Clownfish',
+    fact: 'Clownfish form symbiotic bonds with sea anemones.',
+    rarity: 'common',
+  },
+  'Digital Detox': {
+    emoji: '🐡',
+    species: 'Pufferfish',
+    fact: 'Pufferfish inflate to deter predators.',
+    rarity: 'epic',
+  },
+  Read: {
+    emoji: '🐬',
+    species: 'Dolphin',
+    fact: 'Dolphins use echolocation to navigate and communicate.',
+    rarity: 'rare',
+  },
+  Journal: {
+    emoji: '🐳',
+    species: 'Whale',
+    fact: 'Whales sing complex songs that travel great distances.',
+    rarity: 'rare',
+  },
+  'Boredom Challenge': {
+    emoji: '🦈',
+    species: 'Shark',
+    fact: 'Sharks have roamed oceans for over 400 million years.',
+    rarity: 'legendary',
+  },
+};
 
 function getRandomName() {
   const index = Math.floor(Math.random() * fishNames.length);
   return fishNames[index];
 }
 
-function getRandomRarity(): 'common' | 'rare' | 'epic' | 'legendary' {
-  const r = Math.random();
-  if (r < 0.6) return 'common';
-  if (r < 0.85) return 'rare';
-  if (r < 0.97) return 'epic';
-  return 'legendary';
-}
-
 export async function completeTask(task: string, router: Router) {
   await setTaskCompleted(task);
-  const randomFish = getRandomFish();
+  const reward =
+    TASK_FISH[task] ?? {
+      emoji: '🐠',
+      species: 'Fish',
+      fact: 'Fish are friends, not food.',
+      rarity: 'common' as Rarity,
+    };
   const name = getRandomName();
-  const rarity = getRandomRarity();
-  const fishRecord = await addFish(randomFish.emoji, name, rarity);
-  await setCurrentFish(randomFish.emoji);
+  const fishRecord = await addFish(reward.emoji, name, reward.rarity);
+  await setCurrentFish(reward.emoji);
   router.push({
     pathname: '/hatch',
     params: {
-      fishId: randomFish.id.toString(),
+      emoji: reward.emoji,
+      species: reward.species,
+      fact: reward.fact,
       name,
-      rarity,
+      rarity: reward.rarity,
       hatchedAt: fishRecord.timestamp.toString(),
       key: Date.now().toString(),
     },

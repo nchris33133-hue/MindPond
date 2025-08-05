@@ -11,6 +11,7 @@ import {
   setTaskCompleted,
   getTaskCompletions,
   TASK_COMPLETIONS_KEY,
+  getStreak,
   FISH_LIFESPAN_MS,
 } from './storage';
 
@@ -98,5 +99,17 @@ describe('storage utils', () => {
     const completions = await getTaskCompletions();
     expect(completions.Walk).toBeDefined();
     expect(typeof completions.Walk).toBe('number');
+  });
+
+  it('updates streak for consecutive days', async () => {
+    jest.useFakeTimers().setSystemTime(new Date('2024-01-01'));
+    await setTaskCompleted('Walk');
+    expect(await getStreak()).toBe(1);
+
+    jest.setSystemTime(new Date('2024-01-02'));
+    await setTaskCompleted('Read');
+    expect(await getStreak()).toBe(2);
+
+    jest.useRealTimers();
   });
 });

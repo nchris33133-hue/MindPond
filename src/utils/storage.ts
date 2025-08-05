@@ -5,6 +5,8 @@ export const CURRENT_FISH_KEY = 'current_fish';
 export const FISH_LIST_KEY = 'fish_list';
 export const TASK_COMPLETIONS_KEY = 'task_completions';
 export const TASK_COOLDOWN_MS = 20 * 1000;
+export const STREAK_COUNT_KEY = 'streak_count';
+export const STREAK_LAST_DATE_KEY = 'streak_last_date';
 
 // How long each fish rarity should live, in milliseconds
 export const FISH_LIFESPAN_MS: Record<Rarity, number> = {
@@ -117,6 +119,42 @@ export async function getTaskCompletions(): Promise<TaskCompletions> {
 }
 
 /**
+ * Update the user's streak based on the last completion date.
+ *
+ * A completion on the same day does not change the streak. Completing a
+ * task on the day immediately following the last recorded completion
+ * increments the streak; otherwise the streak resets to 1.
+ */
+async function updateStreak(now = new Date()) {
+  const today = now.toDateString();
+  const last = await AsyncStorage.getItem(STREAK_LAST_DATE_KEY);
+
+  let count = parseInt((await AsyncStorage.getItem(STREAK_COUNT_KEY)) || '0', 10);
+
+  if (last === today) {
+    // already counted today
+    return;
+  }
+
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+
+  if (last === yesterday.toDateString()) {
+    count += 1;
+  } else {
+    count = 1;
+  }
+
+  await AsyncStorage.setItem(STREAK_COUNT_KEY, count.toString());
+  await AsyncStorage.setItem(STREAK_LAST_DATE_KEY, today);
+}
+
+export async function getStreak(): Promise<number> {
+  const count = await AsyncStorage.getItem(STREAK_COUNT_KEY);
+  return count ? parseInt(count, 10) : 0;
+}
+
+/**
  * Mark a task as completed now
  */
 export async function setTaskCompleted(task: string): Promise<void> {
@@ -126,6 +164,7 @@ export async function setTaskCompleted(task: string): Promise<void> {
     TASK_COMPLETIONS_KEY,
     JSON.stringify(completions)
   );
+  await updateStreak();
 }
 
 /**

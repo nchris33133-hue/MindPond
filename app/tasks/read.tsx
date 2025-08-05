@@ -35,7 +35,7 @@ export default function ReadScreen() {
     <View style={{ flex: 1, padding: 20 }}>
       <Text>
         Reading 10 pages (about 20–30 minutes) improves memory and reduces
-        stress. Pick something you'd like to read.
+        stress. Pick something you&apos;d like to read.
       </Text>
       <TextInput
         placeholder="Material"

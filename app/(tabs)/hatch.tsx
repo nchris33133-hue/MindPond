@@ -2,13 +2,12 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Animated, Text, View } from 'react-native';
 
-const fishTypes = ['🐠', '🐟', '🐡', '🦈', '🐬', '🐳', '🐋'];
-
 export default function HatchScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
-  const fishId = params.fishId ? parseInt(params.fishId as string, 10) : null;
-  const fish = fishId !== null ? fishTypes[fishId] : null;
+  const emoji = params.emoji as string | undefined;
+  const species = params.species as string | undefined;
+  const fact = params.fact as string | undefined;
   const name = params.name as string | undefined;
   const rarity = (params.rarity as string | undefined) ?? 'common';
   const hatchedAt = params.hatchedAt ? new Date(parseInt(params.hatchedAt as string, 10)) : null;
@@ -64,17 +63,20 @@ export default function HatchScreen() {
             ]
           }}
         >
-          {fish ?? '❓'}
+          {emoji ?? '❓'}
         </Animated.Text>
       )}
 
       <Text style={{ fontSize: 20, marginTop: 20, textAlign: 'center' }}>
         {!showFish
           ? 'Egg is hatching...'
-          : `Your ${rarity} fish ${name ?? ''} hatched on ${
-              hatchedAt ? hatchedAt.toLocaleString() : ''
-            }!`}
+          : `Your ${rarity} ${species ?? 'fish'} ${
+              name ?? ''
+            } hatched on ${hatchedAt ? hatchedAt.toLocaleString() : ''}!`}
       </Text>
+      {showFish && fact && (
+        <Text style={{ marginTop: 10, fontStyle: 'italic', textAlign: 'center' }}>{fact}</Text>
+      )}
     </View>
   );
 }
