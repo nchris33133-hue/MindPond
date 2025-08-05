@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   addFish,
   getFish,
+  getFishWithNow,
   setCurrentFish,
   getCurrentFish,
   clearFish,
@@ -10,6 +11,7 @@ import {
   setTaskCompleted,
   getTaskCompletions,
   TASK_COMPLETIONS_KEY,
+  FISH_LIFESPAN_MS,
 } from './storage';
 
 jest.mock('@react-native-async-storage/async-storage', () => {
@@ -41,6 +43,7 @@ describe('storage utils', () => {
     expect(fish.type).toBe('salmon');
     expect(fish.name).toBe('Nemo');
     expect(fish.rarity).toBe('common');
+    expect(fish.expiresAt - fish.timestamp).toBe(FISH_LIFESPAN_MS.common);
 
     const list = await getFish();
     expect(list).toHaveLength(1);
@@ -55,6 +58,19 @@ describe('storage utils', () => {
     expect(fish.type).toBe('trout');
     expect(fish.name).toBe('Unnamed');
     expect(fish.rarity).toBe('common');
+    expect(fish.expiresAt - fish.timestamp).toBe(FISH_LIFESPAN_MS.common);
+  });
+
+  it('getFish filters out expired fish', async () => {
+    jest.spyOn(Date, 'now').mockReturnValue(0);
+    await addFish('a', 'one', 'common');
+    await addFish('b', 'two', 'rare');
+
+    const now = FISH_LIFESPAN_MS.common + 1;
+    const list = await getFishWithNow(now);
+    expect(list).toHaveLength(1);
+    expect(list[0].type).toBe('b');
+    (Date.now as jest.Mock).mockRestore();
   });
 
   it('setCurrentFish and getCurrentFish handle the current fish', async () => {
