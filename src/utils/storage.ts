@@ -6,6 +6,14 @@ export const FISH_LIST_KEY = 'fish_list';
 export const TASK_COMPLETIONS_KEY = 'task_completions';
 export const TASK_COOLDOWN_MS = 20 * 1000;
 
+// How long each fish rarity should live, in milliseconds
+export const FISH_LIFESPAN_MS: Record<Rarity, number> = {
+  common: 5 * 60 * 1000,
+  rare: 10 * 60 * 1000,
+  epic: 15 * 60 * 1000,
+  legendary: 20 * 60 * 1000,
+};
+
 export async function setCurrentFish(type: string) {
   await AsyncStorage.setItem(CURRENT_FISH_KEY, type);
 }
@@ -22,15 +30,30 @@ export type Fish = {
   name: string;
   rarity: Rarity;
   timestamp: number;
+  expiresAt: number;
 };
 
 /**
  * Get all fish from storage
  */
 export async function getFish(): Promise<Fish[]> {
+  return await getFishWithNow();
+}
+
+/**
+ * Internal helper to allow injecting a custom 'now' for tests.
+ */
+export async function getFishWithNow(now = Date.now()): Promise<Fish[]> {
   try {
     const json = await AsyncStorage.getItem(FISH_LIST_KEY);
-    return json ? JSON.parse(json) : [];
+    const list: Fish[] = json ? JSON.parse(json) : [];
+    const filtered = list.filter((f) => f.expiresAt > now);
+
+    if (filtered.length !== list.length) {
+      await AsyncStorage.setItem(FISH_LIST_KEY, JSON.stringify(filtered));
+    }
+
+    return filtered;
   } catch (e) {
     console.error('Failed to load fish:', e);
     return [];
@@ -49,12 +72,14 @@ export async function addFish(
   name = 'Unnamed',
   rarity: Rarity = 'common'
 ): Promise<Fish> {
+  const now = Date.now();
   const fish: Fish = {
-    id: Date.now().toString(),
+    id: now.toString(),
     type,
     name,
     rarity,
-    timestamp: Date.now(),
+    timestamp: now,
+    expiresAt: now + FISH_LIFESPAN_MS[rarity],
   };
 
   const existing = await getFish();
