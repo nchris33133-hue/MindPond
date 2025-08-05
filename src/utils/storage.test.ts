@@ -13,6 +13,9 @@ import {
   TASK_COMPLETIONS_KEY,
   getStreak,
   FISH_LIFESPAN_MS,
+  setOnboardingComplete,
+  hasCompletedOnboarding,
+  ONBOARDING_KEY,
 } from './storage';
 
 jest.mock('@react-native-async-storage/async-storage', () => {
@@ -111,5 +114,12 @@ describe('storage utils', () => {
     expect(await getStreak()).toBe(2);
 
     jest.useRealTimers();
+  });
+
+  it('tracks onboarding completion', async () => {
+    expect(await hasCompletedOnboarding()).toBe(false);
+    await setOnboardingComplete();
+    expect(AsyncStorage.setItem).toHaveBeenCalledWith(ONBOARDING_KEY, 'true');
+    expect(await hasCompletedOnboarding()).toBe(true);
   });
 });
