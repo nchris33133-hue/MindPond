@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, Button, TextInput } from 'react-native';
+import ReminderButton from '@/components/ReminderButton';
 import { useRouter } from 'expo-router';
 import { completeTask } from '../../src/utils/taskHelpers';
 
@@ -21,6 +22,7 @@ export default function JournalScreen() {
 
   return (
     <View style={{ flex: 1, padding: 20 }}>
+      <ReminderButton task="Journal" />
       <Text style={{ marginBottom: 10 }}>{prompt}</Text>
       <Button title="New Prompt" onPress={newPrompt} />
       <TextInput

@@ -154,6 +154,17 @@ export async function getStreak(): Promise<number> {
   return count ? parseInt(count, 10) : 0;
 }
 
+export async function getStreakInfo(): Promise<{
+  count: number;
+  lastDate: string | null;
+}> {
+  const [count, lastDate] = await Promise.all([
+    AsyncStorage.getItem(STREAK_COUNT_KEY),
+    AsyncStorage.getItem(STREAK_LAST_DATE_KEY),
+  ]);
+  return { count: count ? parseInt(count, 10) : 0, lastDate };
+}
+
 /**
  * Mark a task as completed now
  */

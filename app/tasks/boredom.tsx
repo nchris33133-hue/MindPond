@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Button, TextInput } from 'react-native';
+import ReminderButton from '@/components/ReminderButton';
 import { useRouter } from 'expo-router';
 import { completeTask, formatTime } from '../../src/utils/taskHelpers';
 
@@ -35,6 +36,7 @@ export default function BoredomScreen() {
 
   return (
     <View style={{ flex: 1, padding: 20 }}>
+      <ReminderButton task="Boredom Challenge" />
       {!finished ? (
         <>
           <Text style={{ marginBottom: 20 }}>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Button } from 'react-native';
+import ReminderButton from '@/components/ReminderButton';
 import { useRouter } from 'expo-router';
 import { completeTask, formatTime } from '../../src/utils/taskHelpers';
 
@@ -28,6 +29,7 @@ export default function DigitalDetoxScreen() {
 
   return (
     <View style={{ flex: 1, padding: 20 }}>
+      <ReminderButton task="Digital Detox" />
       <Text style={{ marginBottom: 10 }}>
         Step away from your device for a while. Choose a duration and stay
         on this screen until the timer ends.
