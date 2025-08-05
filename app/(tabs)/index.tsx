@@ -1,76 +1,30 @@
 import { useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { Alert, Button, Text, View } from 'react-native';
-import {
-  addFish,
-  setCurrentFish,
-  getTaskCompletions,
-  setTaskCompleted,
-  isTaskOnCooldown,
-  TaskCompletions,
-} from '../../src/utils/storage';
+import React, { useCallback, useState } from 'react';
+import { Button, Text, View } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
+import { getTaskCompletions, isTaskOnCooldown, TaskCompletions } from '../../src/utils/storage';
+
+const tasks = [
+  { key: 'Walk', label: 'Walk in Nature', route: 'walk' },
+  { key: 'Read', label: 'Reading', route: 'read' },
+  { key: 'Journal', label: 'Journaling', route: 'journal' },
+  { key: 'Meditate', label: 'Mindfulness Meditation', route: 'meditate' },
+  { key: 'Digital Detox', label: 'Digital Detox', route: 'digital-detox' },
+  { key: 'Boredom Challenge', label: 'Boredom Challenge', route: 'boredom' },
+];
 
 export default function TaskScreen() {
   const router = useRouter();
-  const tasks = ['Walk', 'Read', 'Meditate', 'Journal', 'Digital Detox'];
-  const fishTypes = ['🐠', '🐟', '🐡', '🦈', '🐬', '🐳', '🐋'];
-  const fishNames = ['Nemo', 'Dory', 'Bubbles', 'Finley', 'Coral', 'Gill', 'Splash'];
   const [completions, setCompletions] = useState<TaskCompletions>({});
 
-  useEffect(() => {
-    (async () => {
-      const data = await getTaskCompletions();
-      setCompletions(data);
-    })();
-  }, []);
-
-  function getRandomFish() {
-    const index = Math.floor(Math.random() * fishTypes.length);
-    return { id: index, emoji: fishTypes[index] };
-  }
-
-  function getRandomName() {
-    const index = Math.floor(Math.random() * fishNames.length);
-    return fishNames[index];
-  }
-
-  function getRandomRarity() {
-    const r = Math.random();
-    if (r < 0.6) return 'common';
-    if (r < 0.85) return 'rare';
-    if (r < 0.97) return 'epic';
-    return 'legendary';
-  }
-
-  async function handleTaskComplete(task: string) {
-    if (isTaskOnCooldown(completions, task)) {
-      Alert.alert('Task already completed', 'Please try again in 20 seconds.');
-      return;
-    }
-
-    await setTaskCompleted(task);
-    setCompletions({ ...completions, [task]: Date.now() });
-
-    const randomFish = getRandomFish();
-    const name = getRandomName();
-    const rarity = getRandomRarity();
-    console.log('Generated fish:', randomFish.emoji, name, rarity);
-
-    const fishRecord = await addFish(randomFish.emoji, name, rarity);
-    await setCurrentFish(randomFish.emoji);
-
-    router.push({
-      pathname: '/hatch',
-      params: {
-        fishId: randomFish.id.toString(),
-        name,
-        rarity,
-        hatchedAt: fishRecord.timestamp.toString(),
-        key: Date.now().toString(),
-      }
-    });
-  }
-
+  useFocusEffect(
+    useCallback(() => {
+      (async () => {
+        const data = await getTaskCompletions();
+        setCompletions(data);
+      })();
+    }, [])
+  );
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -78,12 +32,12 @@ export default function TaskScreen() {
         Complete a Task to Hatch an Egg 🐣
       </Text>
       {tasks.map((task) => {
-        const disabled = isTaskOnCooldown(completions, task);
+        const disabled = isTaskOnCooldown(completions, task.key);
         return (
           <Button
-            key={task}
-            title={disabled ? `${task} (Done)` : task}
-            onPress={() => handleTaskComplete(task)}
+            key={task.key}
+            title={disabled ? `${task.label} (Done)` : task.label}
+            onPress={() => router.push(`/tasks/${task.route}`)}
             disabled={disabled}
           />
         );
