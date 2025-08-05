@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from 'react-native';
+import { Button } from 'react-native-paper';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { scheduleTaskReminder } from '@/src/utils/reminders';
 
@@ -25,5 +25,5 @@ export default function ReminderButton({ task }: { task: string }) {
     });
   };
 
-  return <Button title="Set Reminder" onPress={askReminder} />;
+  return <Button mode="contained" onPress={askReminder}>Set Reminder</Button>;
 }
