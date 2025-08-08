@@ -21,13 +21,28 @@ export default function RootLayout() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    (async () => {
-      const done = await hasCompletedOnboarding();
-      if (!done) {
-        router.replace('/onboarding');
+    let cancelled = false;
+
+    const prepare = async () => {
+      try {
+        const done = await hasCompletedOnboarding();
+        if (!done) {
+          router.replace('/onboarding');
+        }
+      } catch (e) {
+        console.error('Failed to determine onboarding status', e);
+      } finally {
+        if (!cancelled) {
+          setReady(true);
+        }
       }
-      setReady(true);
-    })();
+    };
+
+    prepare();
+
+    return () => {
+      cancelled = true;
+    };
   }, [router]);
 
   if (!loaded || !ready) {
