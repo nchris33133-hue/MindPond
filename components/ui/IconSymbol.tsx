@@ -19,6 +19,7 @@ const MAPPING = {
   calendar: 'calendar-today',
   'chevron.left.forwardslash.chevron.right': 'code',
   'chevron.right': 'chevron-right',
+  'fish.fill': 'pets',
 } as IconMapping;
 
 /**
