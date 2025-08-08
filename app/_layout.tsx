@@ -7,6 +7,7 @@ import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { useEffect, useState } from 'react';
+import { ActivityIndicator, View } from 'react-native';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { hasCompletedOnboarding } from '@/src/utils/storage';
@@ -31,7 +32,12 @@ export default function RootLayout() {
 
   if (!loaded || !ready) {
     // Async font loading only occurs in development.
-    return null;
+    // Show a loading indicator instead of a blank screen.
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator />
+      </View>
+    );
   }
 
   return (
